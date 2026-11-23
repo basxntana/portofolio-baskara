@@ -1,26 +1,622 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+@theme {
+  --color-bg: #0d1117;
+  --color-surface: #111821;
+  --color-surface-2: #161f27;
+  --color-line: #253246;
+  --color-primary: #39ff88;
+  --color-secondary: #5b8cff;
+  --color-accent: #ffd166;
+  --color-ink: #e6edf3;
+  --color-muted: #7d8590;
+
+  --font-pixel: var(--font-pixelify), ui-monospace, monospace;
+  --font-term: var(--font-vt323), ui-monospace, monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-step: steps(8, end);
+
+  /* Nothing in an 8-bit game eases. Tailwind's default transition timing is
+     redefined here, so `transition-colors`, `transition-transform` and friends
+     all land in discrete frames instead of gliding. */
+  --default-transition-timing-function: steps(4, end);
+  --default-transition-duration: 120ms;
+}
+
+/* ── The pixel world's own palette ──────────────────────────────────────────
+   Sprites and scenes paint in these, never in hex, so the whole world
+   recolours when the theme flips. Night is the default. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* sky, back to front */
+  --px-sky-1: #0b1020;
+  --px-sky-2: #101a33;
+  --px-sky-3: #16233f;
+  --px-sky-4: #1b2a49;
+  --px-star: #e6edf3;
+  --px-moon: #ffd166;
+
+  /* city, three parallax layers */
+  --px-bldg-far: #141d2e;
+  --px-bldg-mid: #18243a;
+  --px-bldg-near: #1d2b45;
+  --px-win-far: #2a3a5c;
+  --px-win-mid: #5b8cff;
+  --px-win-near: #ffd166;
+  --px-win-off: #121a2a;
+  --px-beacon: #ff5f56;
+
+  /* islands */
+  --px-grass: #2f8f4e;
+  --px-grass-light: #45b96a;
+  --px-soil: #4a3a2a;
+  --px-soil-dark: #32271c;
+  --px-stone: #2a3650;
+  --px-stone-light: #3d4f70;
+  --px-trunk: #4a3a2a;
+  --px-leaf: #2f8f4e;
+  --px-leaf-light: #45b96a;
+  --px-cloud: #2c3e63;
+  --px-cloud-shade: #22304d;
+
+  /* characters */
+  --px-ink: #0a0d12;
+  --px-hair: #2b3a4a;
+  --px-skin: #e8b98a;
+  --px-eye: #0a0d12;
+  --px-mouth: #b8805e;
+  --px-cloth: #5b8cff;
+  --px-cloth-dark: #3d6ad1;
+  --px-accent: #ffd166;
+  --px-trouser: #243041;
+  --px-shoe: #1a222e;
+  --px-glow: #39ff88;
+  --px-lid: #2a3650;
+
+  /* class accents, shared with the UI palette */
+  --px-class-primary: #39ff88;
+  --px-class-secondary: #5b8cff;
+  --px-class-accent: #ffd166;
+
+  /* The offset shadow every panel and button sits on. */
+  --px-shadow: #07100c;
+
+  /* The hero / start-screen artwork. Same composition, different hour. */
+  --scene-url: url("/assets/images/scene-night.webp");
+  /* The Data World horizon and the language-switch loading sky, cut from the
+     supplied sheets. Both ship in two hours of the day, so the theme swaps the
+     URL rather than filtering a night image into something paler. */
+  --world-url: url("/assets/images/world/bg-night.webp");
+  --loading-url: url("/assets/images/loading/sky-night.webp");
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Day ────────────────────────────────────────────────────────────────────
+   Same world, different hour. UI tokens are re-pointed too, so every Tailwind
+   utility that reads --color-* follows along. */
+:root[data-theme="day"] {
+  --color-bg: #e8eef5;
+  --color-surface: #ffffff;
+  --color-surface-2: #dbe5f0;
+  --color-line: #9aabc0;
+  --color-primary: #07713f;
+  --color-secondary: #1b47b8;
+  --color-accent: #7d5300;
+  --color-ink: #0c1420;
+  --color-muted: #4a5a6c;
+
+  --px-sky-1: #6fc0ee;
+  --px-sky-2: #8fd2f4;
+  --px-sky-3: #b2e2fa;
+  --px-sky-4: #d4effc;
+  --px-star: #ffffff;
+  --px-moon: #fff3b0;
+
+  --px-bldg-far: #adbed2;
+  --px-bldg-mid: #93a8c1;
+  --px-bldg-near: #7a8fab;
+  --px-win-far: #cedcec;
+  --px-win-mid: #2f5fc4;
+  --px-win-near: #c98a00;
+  --px-win-off: #64799a;
+  --px-beacon: #e0453c;
+
+  --px-grass: #3fa85f;
+  --px-grass-light: #5fcc83;
+  --px-soil: #7a6246;
+  --px-soil-dark: #5c4934;
+  --px-stone: #c2cfdf;
+  --px-stone-light: #e6eef6;
+  --px-trunk: #7a6246;
+  --px-leaf: #3fa85f;
+  --px-leaf-light: #5fcc83;
+  --px-cloud: #ffffff;
+  --px-cloud-shade: #cfe2f2;
+
+  --px-hair: #22303f;
+  --px-cloth: #2f5fc4;
+  --px-cloth-dark: #1f44a0;
+  --px-accent: #c98a00;
+  --px-trouser: #3a4a5e;
+  --px-shoe: #2a3542;
+  --px-glow: #07713f;
+  --px-lid: #8fa3bd;
+
+  --px-class-primary: #07713f;
+  --px-class-secondary: #1b47b8;
+  --px-class-accent: #7d5300;
+
+  --px-shadow: #9aabc0;
+
+  --scene-url: url("/assets/images/scene-day.webp");
+  --world-url: url("/assets/images/world/bg-day.webp");
+  --loading-url: url("/assets/images/loading/sky-day.webp");
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* The asset pack's icons hardcode the night palette. In daylight the colourful
+   ones are deepened, and the near-white GitHub mark is inverted outright —
+   otherwise it disappears into a white button. Order matters: the mono rule
+   must win, and both have the same specificity. */
+:root[data-theme="day"] .asset-icon {
+  filter: brightness(0.6) saturate(1.35);
+}
+
+:root[data-theme="day"] .asset-icon-mono {
+  filter: invert(1) brightness(0.3);
+}
+
+/* Two prints of the same sprite, one per hour of the day. The theme is on
+   <html> before React hydrates, so letting CSS choose keeps a daylight visitor
+   from seeing a frame of the night art — which is what reading the theme in
+   JavaScript would cost. */
+:root[data-theme="day"] [data-hour="night"],
+:root:not([data-theme="day"]) [data-hour="day"] {
+  display: none;
+}
+
+/* The neon glow is a night effect; it only muddies text in daylight. */
+:root[data-theme="day"] .text-glow {
+  text-shadow: none;
+}
+
+:root[data-theme="day"] .text-arcade {
+  text-shadow: 3px 3px 0 var(--px-shadow);
+}
+
+:root[data-theme="day"] .bg-scanlines {
+  opacity: 0.12 !important;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Clears the sticky header and nothing more. Sections must NOT also set
+       scroll-margin-top: the two offsets add up. */
+    scroll-padding-top: 5.75rem;
+    background-color: var(--color-bg);
+    /* Pixel art must never smooth-scale. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-pixel);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Chunky 8-bit scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border: 3px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── 8-bit cursor ──────────────────────────────────────────────────────────
+   A pixel arrow; it turns neon green over anything clickable. Text fields
+   keep the system I-beam. */
+@layer base {
+  html {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='1' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='2' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='4' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='4' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='4' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='4' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='4' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='5' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='5' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='5' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='5' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='5' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='6' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='6' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='6' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='6' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='6' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='6' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='7' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='7' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='7' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='8' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='8' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='8' y='8' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='9' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='9' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='9' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='4' y='9' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='9' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='7' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='8' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='9' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='10' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='10' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='3' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='10' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='5' y='10' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='11' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='2' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='11' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='11' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='12' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='6' y='12' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='13' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='13' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='8' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='14' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='14' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='7' y='14' width='1' height='1' fill='%23e6edf3'/%3E%3Crect x='8' y='14' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='15' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='7' y='15' width='1' height='1' fill='%230a0d12'/%3E%3C/svg%3E") 0 0, auto;
+  }
+  a,
+  button,
+  summary,
+  label,
+  [role="button"],
+  [role="tab"] {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='1' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='2' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='4' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='4' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='4' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='4' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='4' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='5' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='5' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='5' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='5' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='5' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='6' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='6' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='6' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='6' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='6' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='6' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='7' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='7' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='7' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='8' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='8' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='8' y='8' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='9' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='9' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='9' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='4' y='9' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='9' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='7' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='8' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='9' y='9' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='10' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='10' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='3' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='10' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='5' y='10' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='10' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='11' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='2' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='11' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='11' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='11' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='1' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='4' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='12' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='6' y='12' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='12' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='0' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='13' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='13' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='8' y='13' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='5' y='14' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='14' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='7' y='14' width='1' height='1' fill='%2339ff88'/%3E%3Crect x='8' y='14' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='6' y='15' width='1' height='1' fill='%230a0d12'/%3E%3Crect x='7' y='15' width='1' height='1' fill='%230a0d12'/%3E%3C/svg%3E") 0 0, pointer;
+  }
+  input,
+  textarea {
+    cursor: text;
+  }
+}
+
+/* ── Pixel edge ────────────────────────────────────────────────────────────
+   Square corners, solid border, hard offset shadow — the style defined in
+   assets/styles/pixel-ui.css. No border-radius anywhere, so nothing gets
+   anti-aliased into looking modern. */
+@utility pixel-shadow {
+  box-shadow: 4px 4px 0 var(--px-shadow);
+}
+
+@utility pixel-shadow-sm {
+  box-shadow: 3px 3px 0 var(--px-shadow);
+}
+
+/* Lifts off the page on hover, shadow growing with it — for cards you can
+   click into. Two frames, so it jumps rather than glides. */
+@utility pixel-lift {
+  transition:
+    transform 0.1s steps(2, end),
+    box-shadow 0.1s steps(2, end);
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--px-shadow);
+  }
+}
+
+/* Presses into its own shadow on hover, the way a chunky button should. */
+@utility pixel-press {
+  transition:
+    transform 0.08s steps(2, end),
+    box-shadow 0.08s steps(2, end),
+    background-color 0.08s steps(2, end),
+    color 0.08s steps(2, end);
+
+  &:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--px-shadow);
+  }
+
+  &:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--px-shadow);
+  }
+}
+
+@utility scene-art {
+  background-image: var(--scene-url);
+  background-size: cover;
+  /* The character sits right of centre; this keeps them in frame at any width
+     while the ground line stays pinned to the bottom. */
+  background-position: 78% bottom;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* The Data World backdrop, from the supplied pixel asset pack. */
+@utility world-art {
+  background-image: var(--world-url);
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* The loading sky is a wide, shallow panorama: the boy sits at one end and the
+   city at the other, and `cover` on a laptop screen would crop both away. So it
+   is laid along the bottom at its own proportions, with the sky gradient behind
+   carrying the rest of the viewport. */
+@utility loading-art {
+  background-image: var(--loading-url);
+  background-size: 100% auto;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+
+  /* Across the width of a phone that panorama is a 110px strip along the
+     bottom with flat gradient above it. In portrait it is scaled to the
+     viewport's height instead and anchored near the end the boy sits on, so
+     what fills the screen is the scene rather than the sky. */
+  @media (width < 48rem) {
+    background-size: auto 58%;
+    background-position: 10% bottom;
+  }
+}
+
+@utility loading-sky {
+  background-image: linear-gradient(
+    to bottom,
+    var(--px-sky-1),
+    var(--px-sky-2) 45%,
+    var(--px-sky-3)
+  );
+}
+
+@utility pixelated {
+  image-rendering: pixelated;
+}
+
+/* ── Decorative layers ─────────────────────────────────────────────────── */
+
+/* Faint grid, like a tilemap underlay */
+@utility bg-tilegrid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-line) 55%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* CRT scanlines — purely decorative, sits above background, below content */
+@utility bg-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Y2K checkerboard strip, used as the seam between sections. */
+@utility bg-checker {
+  background-image: repeating-conic-gradient(var(--color-line) 0% 25%, transparent 0% 50%);
+  background-size: 12px 12px;
+}
+
+/* Arcade title: hard pixel drop shadow plus the neon glow. */
+@utility text-arcade {
+  text-shadow:
+    3px 3px 0 var(--px-shadow),
+    0 0 14px color-mix(in srgb, currentColor 45%, transparent);
+}
+
+@utility text-glow {
+  text-shadow: 0 0 12px color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────
+   Every keyframe below runs on `steps()`. A sprite animation has frames, not
+   interpolation — that discreteness is the whole look. */
+
+@keyframes blink-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* A star that holds dark, flicks on, then holds dark again. */
+@keyframes twinkle {
+  0%,
+  72% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  86%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
+/* CRT power-on: two dropped frames, then steady. */
+@keyframes boot-flicker {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  26% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* A hard on/off block, for selection cursors. */
+@keyframes blink-block {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  46%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A single bright scanline sweeping the screen, like a CRT refresh.
+   Animates `top`, not `transform`: a percentage transform resolves against the
+   element's own 2px height, which would move it by two pixels. */
+@keyframes scan-sweep {
+  from {
+    top: -2%;
+  }
+  to {
+    top: 102%;
+  }
+}
+
+/* Collected-item hop. */
+@keyframes hop {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  70% {
+    transform: translateY(-5px);
+  }
+  80% {
+    transform: translateY(-2px);
+  }
+}
+
+@utility animate-caret {
+  animation: blink-caret 1s var(--ease-step) infinite;
+}
+
+@utility animate-bob {
+  animation: bob 2.4s steps(4, end) infinite;
+}
+
+@utility animate-pulse-dot {
+  animation: pulse-dot 1.4s steps(2, end) infinite;
+}
+
+@utility animate-twinkle {
+  animation: twinkle 3.2s steps(3, end) infinite;
+}
+
+@utility animate-boot {
+  animation: boot-flicker 0.45s steps(1, end) 1;
+}
+
+@utility animate-blink-block {
+  animation: blink-block 0.9s steps(1, end) infinite;
+}
+
+@utility animate-scan-sweep {
+  animation: scan-sweep 7s steps(28, end) infinite;
+}
+
+@utility animate-hop {
+  animation: hop 2.6s steps(3, end) infinite;
+}
+
+/* Certificate wheel: smooth on purpose, unlike the stepped motion elsewhere. */
+@keyframes cert-wheel {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+/* Entrance: a fast spin that brakes, then hands over to the slow endless turn. */
+@keyframes cert-burst {
+  from {
+    transform: rotateY(720deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+@utility animate-cert-wheel {
+  animation:
+    cert-burst 1.8s cubic-bezier(0.16, 1, 0.3, 1),
+    cert-wheel 50s linear 1.8s infinite;
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(6%);
+  }
+}
+
+@utility animate-drift {
+  animation: drift 24s steps(24, end) infinite alternate;
+}
+
+@utility animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* ── Reduced motion: honour it everywhere, including decorative loops ──── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* A caret that never blinks should still be visible. */
+  .animate-caret {
+    opacity: 1 !important;
+  }
 }

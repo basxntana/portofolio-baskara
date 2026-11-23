@@ -1,0 +1,13 @@
+/* Baskara 8-bit Portfolio — Design Tokens */
+:root {
+  --bg: #0D1117;
+  --primary: #39FF88;
+  --secondary: #5B8CFF;
+  --accent: #FFD166;
+  --text: #E6EDF3;
+  --muted: #7D8590;
+  --panel: #111821;
+  --border: #253246;
+  --font-pixel: "Pixelify Sans", "Press Start 2P", monospace;
+  --font-body: Inter, Geist, system-ui, sans-serif;
+}
