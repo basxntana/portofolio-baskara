@@ -118,7 +118,7 @@ export const profile = {
   } satisfies LList,
 } as const;
 
-export const siteUrl = "https://baskarakresna.vercel.app";
+export const siteUrl = "https://portofolio-baskara.vercel.app";
 
 /**
  * Static on purpose: Cache Components rejects `new Date()` during prerender,
