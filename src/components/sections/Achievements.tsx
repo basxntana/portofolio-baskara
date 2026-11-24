@@ -10,7 +10,8 @@ import {
   Trophy,
 } from "lucide-react";
 import { PixelPanel } from "@/components/ui/PixelPanel";
-import { AchievementDialog } from "@/components/AchievementDialog";
+import Image from "next/image";
+import { AchievementDialog, PixelTrophy } from "@/components/AchievementDialog";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
@@ -84,17 +85,77 @@ function Card({
         {!a.unlocked ? (
           <p className="font-term text-muted mt-2 text-sm">{t(ui.achievements.locked, locale)}</p>
         ) : null}
-        {a.details ? (
-          <p aria-hidden="true" className={`font-term mt-2 text-sm ${toneText[a.tone]}`}>
-            {t(ui.achievements.viewDetails, locale)} ▸
+      </div>
+    </PixelPanel>
+  );
+}
+
+/** Wide banner for achievements with details, so a real award is not lost among the milestones. */
+function FeaturedCard({ a, locale }: { a: Achievement; locale: Locale }) {
+  const d = a.details!;
+  const cover = d.photos[0];
+
+  return (
+    <PixelPanel
+      tone="accent"
+      glow
+      title={`${a.id}.exe`}
+      innerClassName="grid items-center gap-6 p-5 sm:p-6 md:grid-cols-[1fr_1.1fr]"
+    >
+      {cover ? (
+        <div className="border-line border-2">
+          <Image
+            src={cover.src}
+            alt={t(cover.alt, locale)}
+            width={cover.width}
+            height={cover.height}
+            sizes="(min-width: 768px) 32rem, 100vw"
+            className="h-auto w-full"
+          />
+        </div>
+      ) : null}
+
+      <div className="min-w-0">
+        <p className="font-term text-secondary text-base tracking-widest">
+          ★ {t(ui.achievements.unlocked, locale)} ★
+        </p>
+        <div className="mt-4 flex items-center gap-4">
+          <span className="motion-safe:animate-hop shrink-0">
+            <PixelTrophy size={56} />
+          </span>
+          <div className="min-w-0">
+            <p className="font-term text-muted text-sm tracking-widest">
+              {t(ui.achievements.featured, locale)} · {d.year}
+            </p>
+            <h3 className="text-accent text-glow mt-1 text-lg leading-relaxed sm:text-xl">
+              {t(a.name, locale).toUpperCase()}
+            </h3>
+          </div>
+        </div>
+        <p className="font-pixel text-ink mt-5 text-lg font-semibold sm:text-xl">
+          {t(d.award, locale)}
+        </p>
+        {d.event ? (
+          <p className="text-muted mt-2 text-sm leading-relaxed">
+            {t(d.event, locale)}
+            {d.organizer ? ` — ${d.organizer}` : ""}
           </p>
         ) : null}
+        <p
+          aria-hidden="true"
+          className="font-pixel bg-accent text-bg pixel-shadow mt-6 inline-block px-4 py-2 text-sm font-semibold tracking-widest"
+        >
+          {t(ui.achievements.viewDetails, locale)} ▸
+        </p>
       </div>
     </PixelPanel>
   );
 }
 
 export function Achievements({ locale }: { locale: Locale }) {
+  const featured = achievements.filter((a) => a.details);
+  const rest = achievements.filter((a) => !a.details);
+
   return (
     <Section id="achievements" labelledBy="achievements-heading">
       <SectionHeading
@@ -109,12 +170,18 @@ export function Achievements({ locale }: { locale: Locale }) {
         }
       />
 
+      {featured.map((a) => (
+        <Reveal key={a.id} className="relative mb-8">
+          <FeaturedCard a={a} locale={locale} />
+          <AchievementDialog a={a} locale={locale} />
+        </Reveal>
+      ))}
+
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {achievements.map((a, i) => (
+        {rest.map((a, i) => (
           <li key={a.id}>
-            <Reveal delay={i * 0.05} className="relative h-full">
+            <Reveal delay={i * 0.05} className="h-full">
               <Card a={a} index={i} locale={locale} />
-              {a.details ? <AchievementDialog a={a} locale={locale} /> : null}
             </Reveal>
           </li>
         ))}

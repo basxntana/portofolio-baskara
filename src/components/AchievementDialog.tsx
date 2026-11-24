@@ -25,7 +25,7 @@ const TROPHY = [
   "...XXXXXX...",
 ];
 
-function PixelTrophy({ size = 48 }: { size?: number }) {
+export function PixelTrophy({ size = 48 }: { size?: number }) {
   return (
     <svg
       width={size}

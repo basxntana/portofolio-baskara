@@ -259,6 +259,7 @@ export const ui = {
     title: { en: "ACHIEVEMENTS", id: "ACHIEVEMENT" },
     locked: { en: "LOCKED", id: "TERKUNCI" },
     viewDetails: { en: "VIEW DETAILS", id: "LIHAT DETAIL" },
+    featured: { en: "COMPETITION", id: "KOMPETISI" },
     unlocked: { en: "ACHIEVEMENT UNLOCKED", id: "ACHIEVEMENT TERBUKA" },
     close: { en: "Close", id: "Tutup" },
     award: { en: "Award", id: "Penghargaan" },
