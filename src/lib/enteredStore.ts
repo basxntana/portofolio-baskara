@@ -1,24 +1,13 @@
 /**
- * Whether the visitor has already passed the start screen in this tab.
+ * Whether the visitor has already passed the start screen.
  *
- * sessionStorage is an external store, so it is read through
- * useSyncExternalStore rather than copied into state from an effect.
+ * Kept in module memory, not storage: it survives client-side navigation
+ * (language switch, project pages) but a reload starts at the title menu again.
+ * Read through useSyncExternalStore so every subscriber sees the change.
  */
 
-const KEY = "dataworld.entered";
-
 let listeners: (() => void)[] = [];
-let cached = false;
-let primed = false;
-
-function read(): boolean {
-  try {
-    return sessionStorage.getItem(KEY) === "1";
-  } catch {
-    // Private mode or blocked storage: treat as a first visit.
-    return false;
-  }
-}
+let entered = false;
 
 export function subscribe(onChange: () => void): () => void {
   listeners = [...listeners, onChange];
@@ -27,13 +16,8 @@ export function subscribe(onChange: () => void): () => void {
   };
 }
 
-/** Must be referentially stable between calls, hence the cache. */
 export function getSnapshot(): boolean {
-  if (!primed) {
-    cached = read();
-    primed = true;
-  }
-  return cached;
+  return entered;
 }
 
 export function getServerSnapshot(): boolean {
@@ -41,12 +25,6 @@ export function getServerSnapshot(): boolean {
 }
 
 export function markEntered(): void {
-  try {
-    sessionStorage.setItem(KEY, "1");
-  } catch {
-    /* ignore */
-  }
-  cached = true;
-  primed = true;
+  entered = true;
   listeners.forEach((l) => l());
 }

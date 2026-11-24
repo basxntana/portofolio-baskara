@@ -74,6 +74,9 @@ export function StartScreen({ locale }: { locale: Locale }) {
     requestAnimationFrame(() => {
       if (target) {
         document.getElementById(target)?.scrollIntoView({ block: "start" });
+      } else {
+        // After a reload the browser restores the old scroll behind the menu; START begins at the top.
+        window.scrollTo({ top: 0, behavior: "instant" });
       }
       document.getElementById("main")?.focus();
     });
