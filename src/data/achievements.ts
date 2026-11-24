@@ -13,7 +13,21 @@ export type Achievement = {
   /** Which palette accent it reads in when unlocked. */
   tone: "primary" | "secondary" | "accent";
   /** Lucide icon name, resolved in the component. */
-  icon: "database" | "chart" | "brain" | "cog" | "shield" | "layers" | "rocket";
+  icon: "database" | "chart" | "brain" | "cog" | "shield" | "layers" | "rocket" | "trophy";
+  /** When set, the card opens a detail panel. Unset fields are simply not shown. */
+  details?: AchievementDetails;
+};
+
+export type AchievementDetails = {
+  award: LText;
+  event?: LText;
+  organizer?: string;
+  year?: number;
+  role?: LText;
+  contribution?: LText;
+  /** Original photos, shown unedited. Files go in public/achievements/. */
+  photos: { src: string; alt: LText; width: number; height: number }[];
+  link?: string;
 };
 
 export const achievements: Achievement[] = [
@@ -71,6 +85,22 @@ export const achievements: Achievement[] = [
     unlocked: true,
     tone: "accent",
     icon: "cog",
+  },
+  {
+    id: "first-competition",
+    name: { en: "First Competition", id: "Kompetisi Pertama" },
+    description: {
+      en: "Entered my first competition and placed Juara Harapan 2.",
+      id: "Mengikuti kompetisi pertama saya dan meraih Juara Harapan 2.",
+    },
+    unlocked: true,
+    tone: "accent",
+    icon: "trophy",
+    // TODO: fill event, organizer, year, role, contribution, photos — real details only.
+    details: {
+      award: { en: "Juara Harapan 2", id: "Juara Harapan 2" },
+      photos: [],
+    },
   },
   {
     id: "model-builder",

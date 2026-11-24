@@ -7,8 +7,10 @@ import {
   Lock,
   Rocket,
   ShieldCheck,
+  Trophy,
 } from "lucide-react";
 import { PixelPanel } from "@/components/ui/PixelPanel";
+import { AchievementDialog } from "@/components/AchievementDialog";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
@@ -24,6 +26,7 @@ const icons = {
   shield: ShieldCheck,
   layers: Layers,
   rocket: Rocket,
+  trophy: Trophy,
 } as const;
 
 const toneText = {
@@ -81,6 +84,11 @@ function Card({
         {!a.unlocked ? (
           <p className="font-term text-muted mt-2 text-sm">{t(ui.achievements.locked, locale)}</p>
         ) : null}
+        {a.details ? (
+          <p aria-hidden="true" className={`font-term mt-2 text-sm ${toneText[a.tone]}`}>
+            {t(ui.achievements.viewDetails, locale)} ▸
+          </p>
+        ) : null}
       </div>
     </PixelPanel>
   );
@@ -104,8 +112,9 @@ export function Achievements({ locale }: { locale: Locale }) {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {achievements.map((a, i) => (
           <li key={a.id}>
-            <Reveal delay={i * 0.05} className="h-full">
+            <Reveal delay={i * 0.05} className="relative h-full">
               <Card a={a} index={i} locale={locale} />
+              {a.details ? <AchievementDialog a={a} locale={locale} /> : null}
             </Reveal>
           </li>
         ))}

@@ -258,6 +258,18 @@ export const ui = {
   achievements: {
     title: { en: "ACHIEVEMENTS", id: "ACHIEVEMENT" },
     locked: { en: "LOCKED", id: "TERKUNCI" },
+    viewDetails: { en: "VIEW DETAILS", id: "LIHAT DETAIL" },
+    unlocked: { en: "ACHIEVEMENT UNLOCKED", id: "ACHIEVEMENT TERBUKA" },
+    close: { en: "Close", id: "Tutup" },
+    award: { en: "Award", id: "Penghargaan" },
+    event: { en: "Competition", id: "Kompetisi" },
+    organizer: { en: "Organizer", id: "Penyelenggara" },
+    year: { en: "Year", id: "Tahun" },
+    role: { en: "Role", id: "Peran" },
+    contribution: { en: "Contribution", id: "Kontribusi" },
+    documentation: { en: "Documentation", id: "Dokumentasi" },
+    noPhotos: { en: "Photos coming soon.", id: "Foto segera menyusul." },
+    link: { en: "More info", id: "Info lengkap" },
   },
 
   /* ── Contact ─────────────────────────────────────────────────────────── */
