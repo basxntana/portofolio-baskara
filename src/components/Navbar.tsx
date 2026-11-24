@@ -39,7 +39,9 @@ export function Navbar({ locale }: { locale: Locale }) {
         {t(ui.skipToContent, locale)}
       </a>
 
-      <header className="bg-bg/92 border-line sticky top-0 z-50 border-b-[3px] backdrop-blur-sm">
+      <header className="bg-bg/92 border-line relative sticky top-0 z-50 border-b-[3px] backdrop-blur-sm">
+        {/* Y2K holo strip along the bottom edge. */}
+        <div aria-hidden className="bg-holo absolute inset-x-0 -bottom-[3px] h-[3px] opacity-80" />
         <nav
           aria-label="Main"
           className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-18 sm:px-6"

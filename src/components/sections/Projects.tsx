@@ -67,6 +67,7 @@ function QuestCard({ project, locale }: { project: Project; locale: Locale }) {
   return (
     <PixelPanel
       tone={tone}
+      title={`${project.slug}.exe`}
       className="pixel-lift h-full"
       innerClassName="flex h-full flex-col"
     >

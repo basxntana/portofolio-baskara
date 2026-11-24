@@ -42,7 +42,7 @@ export function SectionHeading({
         />
         <span className={`${toneBg[tone]} block h-3 w-3 opacity-60`} aria-hidden="true" />
         <span className={`${toneBg[tone]} block h-3 w-3 opacity-30`} aria-hidden="true" />
-        <span className={`${toneBg[tone]} block h-[3px] w-10 sm:w-16`} aria-hidden="true" />
+        <span className="bg-holo block h-[3px] w-16 sm:w-32" aria-hidden="true" />
       </div>
 
       <h2
@@ -53,13 +53,13 @@ export function SectionHeading({
         {/* Y2K sparkles, out of phase so they never flash together. */}
         <span
           aria-hidden="true"
-          className="motion-safe:animate-twinkle text-ink absolute -top-3 -right-6 text-base sm:-right-8 sm:text-xl"
+          className="motion-safe:animate-twinkle absolute -top-3 text-[#ff9de2] -right-6 text-base sm:-right-8 sm:text-xl"
         >
           ✦
         </span>
         <span
           aria-hidden="true"
-          className="motion-safe:animate-twinkle text-ink absolute -right-10 bottom-0 text-xs [animation-delay:1.3s] sm:-right-14 sm:text-sm"
+          className="motion-safe:animate-twinkle absolute -right-10 text-[#8fd3ff] bottom-0 text-xs [animation-delay:1.3s] sm:-right-14 sm:text-sm"
         >
           ✦
         </span>

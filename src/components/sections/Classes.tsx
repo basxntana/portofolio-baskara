@@ -60,6 +60,7 @@ export function Classes({ locale }: { locale: Locale }) {
               <Reveal delay={i * 0.1} className="h-full">
                 <PixelPanel
                   tone={c.tone}
+                  title={`${c.id}.cls`}
                   className="pixel-lift h-full"
                   innerClassName="flex h-full flex-col px-5 py-6"
                 >

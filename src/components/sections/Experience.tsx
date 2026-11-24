@@ -25,6 +25,7 @@ export function Experience({ locale }: { locale: Locale }) {
             <Reveal delay={i * 0.08}>
               <PixelPanel
                 tone={exp.status === "ongoing" ? "accent" : "primary"}
+                title={`${exp.id}.log`}
                 innerClassName="px-5 py-6 sm:px-7"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
@@ -37,7 +38,9 @@ export function Experience({ locale }: { locale: Locale }) {
                       ? t(ui.experience.questActive, locale)
                       : t(ui.experience.questCompleted, locale)}
                   </p>
-                  <p className="font-term text-muted text-base">{t(exp.period, locale)}</p>
+                  <p className="font-term text-muted text-base">
+                    {t(exp.period, locale)}
+                  </p>
                 </div>
 
                 <div className="mt-4 flex items-start gap-5">
@@ -51,7 +54,9 @@ export function Experience({ locale }: { locale: Locale }) {
                     </h3>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <Chip tone={exp.status === "ongoing" ? "accent" : "primary"}>
+                      <Chip
+                        tone={exp.status === "ongoing" ? "accent" : "primary"}
+                      >
                         {t(exp.role, locale)}
                       </Chip>
                       <Chip tone="muted">{t(exp.kind, locale)}</Chip>
@@ -63,47 +68,56 @@ export function Experience({ locale }: { locale: Locale }) {
                   {t(exp.summary, locale)}
                 </p>
 
-                <div className="mt-6 grid gap-6 md:grid-cols-2">
-                  <div>
-                    <p className="font-pixel text-muted mb-3 text-xs tracking-wider uppercase">
-                      {t(ui.experience.responsibilities, locale)}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {t(exp.responsibilities, locale).map((r) => (
-                        <li
-                          key={r}
-                          className="text-muted flex gap-2.5 text-xs leading-relaxed"
-                        >
-                          <span
-                            className="bg-line mt-1.5 block h-2 w-2 shrink-0"
-                            aria-hidden="true"
-                          />
-                          {r}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                {/* Unwritten lists are left out rather than shown as placeholders. */}
+                {t(exp.responsibilities, locale).length +
+                  t(exp.contribution, locale).length >
+                0 ? (
+                  <div className="mt-6 grid gap-6 md:grid-cols-2">
+                    {t(exp.responsibilities, locale).length > 0 ? (
+                      <div>
+                        <p className="font-pixel text-muted mb-3 text-xs tracking-wider uppercase">
+                          {t(ui.experience.responsibilities, locale)}
+                        </p>
+                        <ul className="space-y-2.5">
+                          {t(exp.responsibilities, locale).map((r) => (
+                            <li
+                              key={r}
+                              className="text-muted flex gap-2.5 text-xs leading-relaxed"
+                            >
+                              <span
+                                className="bg-line mt-1.5 block h-2 w-2 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {r}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
 
-                  <div>
-                    <p className="font-pixel text-muted mb-3 text-xs tracking-wider uppercase">
-                      {t(ui.experience.contribution, locale)}
-                    </p>
-                    <ul className="space-y-2.5">
-                      {t(exp.contribution, locale).map((c) => (
-                        <li
-                          key={c}
-                          className="text-muted flex gap-2.5 text-xs leading-relaxed"
-                        >
-                          <span
-                            className="bg-secondary mt-1.5 block h-2 w-2 shrink-0"
-                            aria-hidden="true"
-                          />
-                          {c}
-                        </li>
-                      ))}
-                    </ul>
+                    {t(exp.contribution, locale).length > 0 ? (
+                      <div>
+                        <p className="font-pixel text-muted mb-3 text-xs tracking-wider uppercase">
+                          {t(ui.experience.contribution, locale)}
+                        </p>
+                        <ul className="space-y-2.5">
+                          {t(exp.contribution, locale).map((c) => (
+                            <li
+                              key={c}
+                              className="text-muted flex gap-2.5 text-xs leading-relaxed"
+                            >
+                              <span
+                                className="bg-secondary mt-1.5 block h-2 w-2 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {c}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
+                ) : null}
 
                 {t(exp.result, locale).length > 0 ? (
                   <div className="border-line mt-6 border-t-[3px] pt-5">

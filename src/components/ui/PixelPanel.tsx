@@ -21,10 +21,10 @@ const glowTone: Record<Tone, string> = {
 };
 
 const barTone: Record<Tone, string> = {
-  primary: "bg-primary text-bg",
-  secondary: "bg-secondary text-bg",
-  accent: "bg-accent text-bg",
-  muted: "bg-muted text-bg",
+  primary: "bg-primary bar-sheen text-bg",
+  secondary: "bg-secondary bar-sheen text-bg",
+  accent: "bg-accent bar-sheen text-bg",
+  muted: "bg-muted bar-sheen text-bg",
   line: "bg-line text-ink",
 };
 
@@ -53,7 +53,7 @@ export function PixelPanel({
 
   return (
     <Tag
-      className={`bg-surface border-2 ${borderTone[tone]} ${glowing ? "" : "pixel-shadow"} ${className}`}
+      className={`bg-surface flex flex-col border-2 ${borderTone[tone]} ${glowing ? "" : "pixel-shadow"} ${className}`}
       style={
         glowing
           ? { boxShadow: `4px 4px 0 var(--px-shadow), ${glowTone[tone]}` }
@@ -78,7 +78,7 @@ export function PixelPanel({
           </span>
         </div>
       ) : null}
-      <div className={innerClassName}>{children}</div>
+      <div className={`bevel flex-1 ${innerClassName}`}>{children}</div>
     </Tag>
   );
 }

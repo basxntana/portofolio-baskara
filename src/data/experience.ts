@@ -37,17 +37,20 @@ export const experiences: Experience[] = [
       id: "Berperan sebagai Data Scientist di proyek FestaFestum. Detail cakupan, dataset dan hasilnya sedang ditulis.",
     },
     responsibilities: {
-      en: ["TODO: the specific work you owned on this project."],
-      id: ["TODO: pekerjaan spesifik yang kamu pegang di proyek ini."],
+      // TODO(baskara): the specific work you owned on this project.
+      en: [],
+      id: [],
     },
     contribution: {
-      en: ["TODO: what existed because you were on the team."],
-      id: ["TODO: apa yang ada karena kamu di tim ini."],
+      // TODO(baskara): what existed because you were on the team.
+      en: [],
+      id: [],
     },
     tech: ["Python", "pandas", "scikit-learn"],
     result: {
-      en: ["TODO: what the project delivered, ideally with a number."],
-      id: ["TODO: apa yang dihasilkan proyek ini, idealnya dengan angka."],
+      // TODO(baskara): what the project delivered, ideally with a number.
+      en: [],
+      id: [],
     },
   },
   {
