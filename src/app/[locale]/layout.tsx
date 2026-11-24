@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { Inter, Pixelify_Sans, VT323 } from "next/font/google";
-import { profile, siteUrl } from "@/data/profile";
+import { profile, shareImage, siteUrl } from "@/data/profile";
 import {
   DEFAULT_LOCALE,
   LOCALES,
@@ -90,11 +90,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${profile.name} — ${t(profile.title, locale)}`,
       description: desc,
       locale: locale === "id" ? "id_ID" : "en_US",
+      images: [shareImage],
     },
     twitter: {
       card: "summary_large_image",
       title: `${profile.name} — ${t(profile.title, locale)}`,
       description: desc,
+      images: [shareImage],
     },
     robots: {
       index: true,

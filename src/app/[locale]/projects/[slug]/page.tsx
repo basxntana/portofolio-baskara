@@ -9,7 +9,7 @@ import { PixelPanel } from "@/components/ui/PixelPanel";
 import { PixelLink, PixelDisabled } from "@/components/ui/PixelButton";
 import { Chip } from "@/components/ui/Chip";
 import { getProject, projects, type ProjectCategory } from "@/data/projects";
-import { siteUrl } from "@/data/profile";
+import { shareImage, siteUrl } from "@/data/profile";
 import { LOCALES, t, type Locale } from "@/lib/i18n";
 import { localePath } from "@/lib/paths";
 import { ui } from "@/data/ui";
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       url: `${siteUrl}/${locale}/projects/${project.slug}`,
       title: project.title,
       description: summary,
-      images: project.cover ? [{ url: project.cover }] : undefined,
+      images: project.cover ? [{ url: project.cover }] : [shareImage],
     },
   };
 }

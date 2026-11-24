@@ -120,6 +120,14 @@ export const profile = {
 
 export const siteUrl = "https://portofolio-baskara.vercel.app";
 
+/** Link-preview card (public/og.jpg), also the fallback for projects without a cover. */
+export const shareImage = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Baskara Kresna — Data Professional: a pixel-art data world with Data Engineering, Data Analytics and Data Science islands.",
+};
+
 /**
  * Static on purpose: Cache Components rejects `new Date()` during prerender,
  * and a footer year is not worth making the page dynamic for.
