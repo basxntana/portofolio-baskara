@@ -133,7 +133,7 @@ export default async function RootLayout({
             flashes the wrong time of day. */}
         <script dangerouslySetInnerHTML={{ __html: BOOTSTRAP }} />
       </head>
-      <body className="bg-bg text-ink flex min-h-full flex-col">
+      <body className="text-ink flex min-h-full flex-col">
         {children}
         {/* Here rather than in the page: the quest pages switch language too,
             and the overlay has to outlive the page being replaced. */}

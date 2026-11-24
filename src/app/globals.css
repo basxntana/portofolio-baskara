@@ -204,7 +204,20 @@
   }
 
   body {
+    /* Own stacking context, so the grid floor (z -1) paints above this background. */
+    position: relative;
+    z-index: 0;
     background-color: var(--color-bg);
+    background-image:
+      var(--bg-stars),
+      var(--bg-stars),
+      radial-gradient(ellipse 90% 35% at 50% 100%, var(--bg-glow), transparent 70%),
+      linear-gradient(to bottom, var(--bg-top), var(--bg-mid) 55%, var(--bg-bot));
+    /* Two star layers at unrelated sizes, so the tile never reads as a pattern. */
+    background-size: 420px 420px, 268px 268px, 100% 100%, 100% 100%;
+    background-position: 0 0, 137px 71px, 0 0, 0 0;
+    /* shortcut: iOS ignores fixed attachment and scrolls the backdrop instead; harmless. */
+    background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-sans);
     overflow-x: hidden;
@@ -363,6 +376,53 @@
 
 @utility pixelated {
   image-rendering: pixelated;
+}
+
+/* ── Page backdrop ──────────────────────────────────────────────────────────
+   Y2K night sky behind every page: purple-to-navy gradient, a tiled field of
+   pixel stars and sparkles, and a neon grid floor running toward the horizon. */
+:root {
+  --bg-top: #0b0f1e;
+  --bg-mid: #1a1036;
+  --bg-bot: #0a1a33;
+  --bg-glow: color-mix(in srgb, #ff5fd2 22%, transparent);
+  --bg-grid: color-mix(in srgb, #b46bff 60%, transparent);
+  --bg-stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140' shape-rendering='crispEdges'%3E%3Crect x='10' y='17' width='1' height='1' fill='%23fff' opacity='0.55'/%3E%3Crect x='95' y='63' width='1' height='1' fill='%23fff' opacity='0.4'/%3E%3Crect x='42' y='108' width='1' height='1' fill='%23fff' opacity='0.45'/%3E%3Crect x='66' y='28' width='1' height='1' fill='%238fd3ff' opacity='0.7'/%3E%3Crect x='21' y='70' width='1' height='1' fill='%23ff9de2' opacity='0.6'/%3E%3Crect x='128' y='120' width='1' height='1' fill='%23fff' opacity='0.4'/%3E%3Cpath d='M115 105h1v1h1v1h-1v1h-1v-1h-1v-1h1z' fill='%23fff' opacity='0.45'/%3E%3Cpath d='M30 45h1v1h1v1h-1v1h-1v-1h-1v-1h1z' fill='%238fd3ff' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="day"] {
+  --bg-top: #cfe3f7;
+  --bg-mid: #e4daf7;
+  --bg-bot: #d6e8f6;
+  --bg-glow: color-mix(in srgb, #ff7ad9 18%, transparent);
+  --bg-grid: color-mix(in srgb, #7c4dff 28%, transparent);
+  --bg-stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140' shape-rendering='crispEdges'%3E%3Cpath d='M115 105h1v1h1v1h-1v1h-1v-1h-1v-1h1z' fill='%23fff' opacity='0.9'/%3E%3Crect x='66' y='28' width='1' height='1' fill='%23fff' opacity='1'/%3E%3Crect x='21' y='70' width='1' height='1' fill='%23fff' opacity='0.8'/%3E%3Cpath d='M30 45h1v1h1v1h-1v1h-1v-1h-1v-1h1z' fill='%23fff' opacity='0.7'/%3E%3C/svg%3E");
+}
+
+/* The grid floor: a flat tile grid tipped back in perspective, fading out at the horizon. */
+body::after {
+  content: "";
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  height: 42vh;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--bg-grid) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--bg-grid) 2px, transparent 2px);
+  background-size: 64px 64px;
+  transform: perspective(320px) rotateX(62deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, black, transparent 90%);
+  opacity: 0.55;
+  animation: grid-run 3s steps(8, end) infinite;
+}
+
+@keyframes grid-run {
+  to {
+    background-position: 0 64px;
+  }
 }
 
 /* ── Decorative layers ─────────────────────────────────────────────────── */
