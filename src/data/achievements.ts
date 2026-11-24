@@ -90,16 +90,53 @@ export const achievements: Achievement[] = [
     id: "first-competition",
     name: { en: "First Competition", id: "Kompetisi Pertama" },
     description: {
-      en: "Entered my first competition and placed Juara Harapan 2.",
-      id: "Mengikuti kompetisi pertama saya dan meraih Juara Harapan 2.",
+      en: "Entered my first competition, USB 2026, and placed Juara Harapan 2 in the ICT Business category.",
+      id: "Mengikuti kompetisi pertama saya, USB 2026, dan meraih Juara Harapan 2 kategori Bisnis TIK.",
     },
     unlocked: true,
     tone: "accent",
     icon: "trophy",
-    // TODO: fill event, organizer, year, role, contribution, photos — real details only.
+    // TODO: add role and contribution once provided — real details only.
     details: {
-      award: { en: "Juara Harapan 2", id: "Juara Harapan 2" },
-      photos: [],
+      award: {
+        en: "Juara Harapan 2 (2nd Honorable Mention) · ICT Business category",
+        id: "Juara Harapan 2 · Kategori Bisnis TIK",
+      },
+      event: {
+        en: "USB 2026 — Unlimited Software Building (Final)",
+        id: "USB 2026 — Unlimited Software Building (Final)",
+      },
+      organizer: "Universitas Gunadarma",
+      year: 2026,
+      photos: [
+        {
+          src: "/achievements/usb-2026-team.jpeg",
+          alt: {
+            en: "The team of four posing with the Harapan 2 award board for the ICT Business category at USB 2026.",
+            id: "Tim berempat berpose dengan papan penghargaan Harapan 2 kategori Bisnis TIK di USB 2026.",
+          },
+          width: 4032,
+          height: 3024,
+        },
+        {
+          src: "/achievements/usb-2026-solo.jpeg",
+          alt: {
+            en: "Holding the Harapan 2 award board and medal in the USB 2026 venue.",
+            id: "Memegang papan penghargaan Harapan 2 dan medali di lokasi USB 2026.",
+          },
+          width: 3024,
+          height: 4032,
+        },
+        {
+          src: "/achievements/usb-2026-selfie.jpeg",
+          alt: {
+            en: "Team selfie with the Harapan 2 award board in front of the USB 2026 final stage.",
+            id: "Swafoto tim dengan papan penghargaan Harapan 2 di depan panggung final USB 2026.",
+          },
+          width: 3024,
+          height: 4032,
+        },
+      ],
     },
   },
   {
